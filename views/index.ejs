@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='http://www.helloweba.com/demo/css/main.css'>
+    <link rel='stylesheet' href='/stylesheets/fullcalendar.css' />
+    <style type="text/css">
+	#calendar {
+		width:960px; 
+		margin:20px auto 10px auto;
+	}
+	.subscribe {
+		float: right;
+		padding: 7px;
+		position: relative;
+		margin-top: 30px;
+	}
+    </style>
+    <script src='/javascripts/jquery-1.9.1.min.js'></script>
+    <script src='/javascripts/jquery-ui-1.10.2.custom.min.js'></script>
+    <script src='/javascripts/fullcalendar.min.js'></script>
+    <script type="text/javascript">
+	var schedulers = <%- schedulers %>;
+	$(function() {
+
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev, next, today',
+				center: 'title',
+				right: 'month, agendaWeek, agendDay'
+			},
+			firstDay: 1,
+			editable: true,
+			timeFormat: 'H:mm',
+			axisFormat: 'H:mm',
+			events: schedulers
+		});
+	});
+    </script>
+  </head>
+  <body>
+	  <div id="header">
+	  <div class="subscribe">
+    	  <form action="#", method="post">
+		  <span>用户名：<input type="text" name="name" /></span>
+		  <span>密&nbsp;&nbsp;码：<input type="password" name="password" /></span>
+		  <span><input type="submit" value="登录" /></span>
+	  </form>
+	  </div>
+	  </div>
+	  <div id="main" style="width:1060px">
+		<h2 class="top_title">运维值班表</h2>
+	  	<div id="calendar"></div>
+	  </div>
+  </body>
+</html>
