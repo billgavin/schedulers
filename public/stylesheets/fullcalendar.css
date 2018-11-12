@@ -1,5 +1,5 @@
 /*!
- * FullCalendar v1.6.0 Stylesheet
+ * FullCalendar v1.6.4 Stylesheet
  * Docs & License: http://arshaw.com/fullcalendar/
  * (c) 2013 Adam Shaw
  */
@@ -25,7 +25,7 @@ html .fc,
 	padding: 0;
 	vertical-align: top;
 	}
-
+.mr15 {margin-right:15px}
 
 
 /* Header
@@ -51,11 +51,29 @@ html .fc,
 	
 .fc-header-title {
 	display: inline-block;
-	vertical-align: top;
+	vertical-align: middle;
+	height: 25px;
+	line-height: 25px;
+	}
+.fc-select {
+	display: inline-block;
+	width: 70px;
+	height: 2.1em;
+	position: relative;
+	vertical-align: middle;
+	padding: 0;
+	overflow: hidden;
+	background-color: #fff;
+	color: #555;
+	border: 1px solid #aaa;
+	text-shadow: none;
+	border-radius: 4px;	
+	transition: box-shadow 0.25s ease;
+	z-index: 2;
 	}
 	
 .fc-header-title h2 {
-	margin-top: 0; font-size:16px;
+	margin-top: 0;
 	white-space: nowrap;
 	}
 	
@@ -102,10 +120,11 @@ html .fc,
 	
 .fc-content {
 	clear: both;
+	zoom: 1; /* for IE7, gives accurate coordinates for [un]freezeContentHeight */
 	}
 	
 .fc-view {
-	width: 100%; /* needed for view switching (when view is absolute) */
+	width: 100%;
 	overflow: hidden;
 	}
 	
@@ -116,13 +135,13 @@ html .fc,
 
 .fc-widget-header,    /* <th>, usually */
 .fc-widget-content {  /* <td>, usually */
-	border: 1px solid #ddd; 
+	border: 1px solid #ddd;
 	}
-	
-.fc-widget-header{background:#f7f7f7}
-
+.fc-widget-content {
+	cursor: pointer;
+	}
 .fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
-	background: #fcf8e3;
+	background: #e0f4d7;
 	}
 	
 .fc-cell-overlay { /* semi-transparent rectangle while dragging */
@@ -168,7 +187,7 @@ html .fc,
 
 .fc-text-arrow {
 	margin: 0 .1em;
-	font-size: 2em;
+	font-size: 1em;
 	font-family: "Courier New", Courier, monospace;
 	vertical-align: baseline; /* for IE7 */
 	}
@@ -252,13 +271,22 @@ html .fc,
 
 /* Global Event Styles
 ------------------------------------------------------------------------*/
+
+.fc-event-container > * {
+	z-index: 8;
+	}
+
+.fc-event-container > .ui-draggable-dragging,
+.fc-event-container > .ui-resizable-resizing {
+	z-index: 9;
+	}
 	 
 .fc-event {
-	border: 1px solid #3a87ad; /* default BORDER color */
-	background-color: #3a87ad; /* default BACKGROUND color */
-	color: #fff;               /* default TEXT color */
-	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-	font-size: .85em;
+	border: 1px solid #FDE4C8; /* default BORDER color */
+	background-color: #fff4e8; /* default BACKGROUND color */
+	color: #555;               /* default TEXT color */
+	font-size: 12px;
+	padding: 2px 0px;
 	cursor: default;
 	}
 
@@ -277,6 +305,7 @@ a.fc-event,
 
 .fc-event-inner {
 	width: 100%;
+	height: 100%;
 	overflow: hidden;
 	}
 	
@@ -366,7 +395,7 @@ table.fc-border-separate {
 	
 .fc-border-separate tbody tr.fc-first td,
 .fc-border-separate tbody tr.fc-first th {
-	border-top-width: 0; 
+	border-top-width: 0;
 	}
 	
 	
@@ -376,6 +405,7 @@ table.fc-border-separate {
 
 .fc-grid th {
 	text-align: center;
+	padding: 8px 0px;
 	}
 
 .fc .fc-week-number {
@@ -387,12 +417,12 @@ table.fc-border-separate {
 	padding: 0 2px;
 	}
 	
-.fc-grid .fc-day-number {
-	float: right;
+.fc-grid .fc-day-number, .fc-grid .fc-day-cnTerm, .fc-grid .fc-day-cnDate {
+	text-align:right;
 	padding: 0 2px;
 	}
 	
-.fc-grid .fc-other-month .fc-day-number {
+.fc-grid .fc-other-month .fc-day-number, .fc-grid .fc-other-month .fc-day-cnTerm , .fc-grid .fc-other-month .fc-day-cnDate  {
 	opacity: 0.3;
 	filter: alpha(opacity=30); /* for IE */
 	/* opacity with small font can sometimes look too faded
@@ -400,11 +430,45 @@ table.fc-border-separate {
 	   making day-numbers bold also fixes the problem */
 	}
 	
+.fc-grid .fc-day-number{
+font-size: 24px;
+font-family: Arial;
+font-weight: 600;
+padding: 12px 12px 0px 12px;
+line-height: 23px;
+height: 23px;
+color: #555;
+}
+
+.fc-grid .fc-day-cnDate, .fc-grid .fc-day-cnTerm{
+	font-size: 12px;
+font-family: "Microsoft YaHei";
+padding-right: 12px;
+color: #999;
+}
+.fc-grid .fc-day-cnTerm{
+	color:#6ABA49;
+	font-size: 13px;
+}
+
 .fc-grid .fc-day-content {
 	clear: both;
 	padding: 2px 2px 1px; /* distance between events and day edges */
 	}
 	
+.fc-day-header {
+	color: #25992E;
+font-size: 14px;
+font-family: "Microsoft YaHei";
+}
+.fc-sun, .fc-sat {
+	color: #ED6D23;
+}
+
+.fc-grid .fc-sun .fc-day-number, .fc-grid .fc-sun .fc-day-cnDate, 
+.fc-grid .fc-sat .fc-day-number, .fc-grid .fc-sat .fc-day-cnDate{
+color:#ed6d23
+}
 /* event styles */
 	
 .fc-grid .fc-event-time {
@@ -414,11 +478,11 @@ table.fc-border-separate {
 /* right-to-left */
 	
 .fc-rtl .fc-grid .fc-day-number {
-	float: left;
+	text-align: left;
 	}
 	
 .fc-rtl .fc-grid .fc-event-time {
-	float: right;
+	text-align: right;
 	}
 	
 	
@@ -551,8 +615,8 @@ table.fc-border-separate {
 	width: 100%;
 	height: 100%;
 	background: #fff;
-	opacity: .3;
-	filter: alpha(opacity=30);
+	opacity: .25;
+	filter: alpha(opacity=25);
 	}
 	
 .fc .ui-draggable-dragging .fc-event-bg, /* TODO: something nicer like .fc-opacity */
@@ -578,4 +642,54 @@ table.fc-border-separate {
 	_overflow: hidden;
 	}
 	
-	
+/** 页面额外组件样式 **/
+.h_calendar_alm {
+border: 1px solid #c3e6b3;
+}
+.alm_date {
+height: 33px;
+line-height: 33px;
+background: #fff;
+text-align: center;
+color: #555;
+font-family: "Microsoft YaHei";
+font-size: 14px;
+}
+.alm_content {
+	padding: 10px 0px 15px;
+border-top: 3px solid #b3deaf;
+background: #e0f4d7;
+position: relative;
+}
+.today_icon {
+width: 50px;
+height: 54px;
+background: url(/images/today_icon.jpg) no-repeat;
+position: absolute;
+left: 160px;
+top: -3px;
+}
+.today_date {
+font-size: 72px;
+color: #1f9237;
+line-height: 85px;
+font-family: "Microsoft YaHei";
+text-align: center;
+}
+.alm_content p {
+text-align: center;
+color: #6aba49;
+font-size: 12px;
+line-height: 22px;
+}
+.alm_content .alm_lunar_date {
+width: 190px;
+height: 30px;
+margin: 0 auto;
+line-height: 30px;
+text-align: center;
+color: #ed6d23;
+font-size: 14px;
+font-family: "Microsoft YaHei";
+background: url(/images/alm_lunar_date.png) no-repeat;
+}

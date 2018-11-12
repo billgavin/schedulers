@@ -4,6 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var logger = require('morgan');
+var mongoose = require('mongoose');
+var flash = require('connect-flash');
+
+var User = require('./model/user');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -28,7 +32,14 @@ app.use(session({
 		maxAge: 80000
 	}
 }));
+app.use(flash());
+app.use(function(req, res, next) {
+	res.locals.success = req.flash('success').toString();
+	res.locals.error = req.flash('error').toString();
+	next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
