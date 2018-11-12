@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<link href='/stylesheets/fullcalendar.css' rel='stylesheet' />
+<link href='/stylesheets/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='/javascripts/jquery.min.js'></script>
+<script src='/javascripts/jquery-ui.custom.min.js'></script>
+<script src='/javascripts/fullcalendar.js'></script>
+<script type="text/javascript">
+	/** calendar配置 **/
+	$(document).ready(
+        function() {
+	$("#calendar").fullCalendar(
+		{
+			header : {
+				left : 'prevYear,nextYear',
+				center : 'title',
+				right : 'prev,next'
+			},
+			buttonText: {
+				prev: "<span class='fc-text-arrow'>&lsaquo;上月</span>",
+				next: "<span class='fc-text-arrow'>下月&rsaquo;</span>",
+				prevYear: "<span class='fc-text-arrow'>&laquo;上年</span>",
+				nextYear: "<span class='fc-text-arrow'>下年&raquo;</span>"
+			},
+			editable : true,
+
+		});
+	});
+	/** 绑定事件到日期下拉框 **/
+	$(function(){
+		$("#fc-dateSelect").delegate("select","change",function(){
+			var fcsYear = $("#fcs_date_year").val();
+			var fcsMonth = $("#fcs_date_month").val();
+			$("#calendar").fullCalendar('gotoDate', fcsYear, fcsMonth);
+		});
+	});
+	</script>
+<style>
+
+body {
+	margin-top: 40px;
+	text-align: center;
+	font-size: 14px;
+	font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+	}
+
+.calendarWrapper {
+	width: 1190px;
+	margin: 0 auto 15px;
+}
+
+#calendar {
+	width: 400px;
+	background: #fff;
+	padding: 15px 10px;
+}
+
+.calendarWrapper .rightSidePanel {
+	width: 725px;
+	padding: 0px 15px;
+}
+.dib {display: inline-block;}
+.fr {float: right;}
+
+table {
+	border: 2px;
+	border-spacing: 1px;
+	border-color: gray;
+	width: 100%;
+	max-width: 100%;
+	background-color: transparent;
+	text-align: center;
+	padding-top: 20px;
+	box-sizing:border-box;
+}
+
+
+.white_content {
+	display: none;
+	position: absolute;
+	top: 30%;
+	left: 30%;
+	width: 35%;
+	height: 35%;
+	padding: 20px;
+	border: 2px solid blue;
+	background-color: white;
+	z-index: 1002;
+	overflow: auto;
+	border-radius: 10px;
+}
+
+.black_overlay {
+	display: none;
+	position: absolute;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	z-index: 1001;
+	-moz-opacity: 0.8;
+	opacity: .80;
+	filter: alpha(opacity=88);
+}
+.form-group {margin-top: 10px; margin-bottom: 5px;}
+
+.sr-only {
+        text-align:left;
+        display: block;
+        max-width: 100%;
+        margin-left: 20px;
+        margin-bottom: 5px;
+        font-weight: 700;
+}
+
+
+.form-control {
+        display: block;
+        width: 88%;
+        height: 34px;
+        margin-left: 20px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+
+}
+
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 10px 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-radius: 4px;
+}
+
+</style>
+</head>
+<body>
+	<div id="msgTopTipWrapper" style="display:none">
+		<div id="msgTopTip">
+			<span><i class="iconTip"></i>正在载入日历数据...</span>
+		</div>
+	</div>
+	<% if (error) { %>
+		<div id="msgTopTip">
+			<span><i class="iconTip"></i><%= error %></span>
+		</div>
+	<% } %>
+	<div class="calendarWrapper">
+		<div class="rightSidePanel mb50 fr">
+			<div id="users-manager" class="white_content">
+			<form style="height: 90%" id="users">
+				<div class="form-group">
+                                <label class="sr-only" for="name">用户名：</label>
+                                <input class="form-control" id="name" type="text" name="name" placeholder="请输入用户名" />
+                                </div>	
+				<div class="form-group">
+                                <label class="sr-only" for="phone">手&nbsp;&nbsp;&nbsp;&nbsp;机：</label>
+                                <input class="form-control" id="phone" type="text" name="phone" placeholder="请输入手机号" />
+                                </div>	
+				<div class="form-group">
+                                <label class="sr-only" for="email">邮&nbsp;&nbsp;&nbsp;&nbsp;箱：</label>
+                                <input class="form-control" id="email" type="text" name="email" placeholder="请输入邮箱" />
+                                </div>	
+				<input class="btn" type="reset" value="取消" />
+				<button class="btn" type="button" onclick="user_save()">保存</button>
+			</form>
+				<a style="margin-right: 10px" href="javascript:void(0)" onclick="document.getElementById('users-manager').style.display='none';document.getElementById('fade').style.display='none'">关闭</a>
+			</div>
+			<div id="fade" class="black_overlay"></div>
+			<table>
+				<tr>
+					<th>用户</th>
+					<th>手机</th>
+					<th>邮箱</th>
+					<th>操作</th>
+				</tr>
+				<% users.forEach(function(user) { %>
+				<tr>
+					<td><%= user.name %></td>
+					<td><%= user.phone %></td>
+					<td><%= user.email %></td>
+					<td>
+						<a>修改</a>
+						<a>删除</a>
+					</td>
+				</tr>
+				<% }) %>
+			</table>
+			<div>
+				<button type="button" id="prev_page">上一页</button>
+				<button type="button" id="next_page">下一页</button>
+				<button type="button" id="add_user" onclick="add_user()">添加用户</button>
+			</div>
+		</div>
+		<div id="calendar" class="dib"></div>
+	</div>
+	<script type='text/javascript'>
+		function add_user() {
+			$("#users-manager").show();
+			$('#fade').show();
+		}
+
+		function user_save() {
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				contentType: "appliaction/json",
+				url: "/users/add",
+				data: $("#users").serialize(),
+			}).then(res => {
+				alert(res);
+			});
+		
+		}
+	</script>
+</body>
+</html>
