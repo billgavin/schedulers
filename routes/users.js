@@ -22,7 +22,6 @@ router.post('/login', function(req, res, next) {
 			if (err) {
 				console.error(err);
 			}else {
-				console.log(users);
 				res.render('users', {title: '后台管理', users: users});
 			}
 		});
@@ -35,19 +34,32 @@ router.post('/login', function(req, res, next) {
 
 router.post('/add', function(req, res, next) {
 	data = req.body;
+	console.log(JSON.stringify(data));
 	data._id = new mongoose.Types.ObjectId();
 	user = new User(data);
 	user.save(function(err) {
 		if (err) {
-			console.error(err);
 			req.flash('error', '添加失败！');
-			res.redirect('/');
+			res.redirect('/users');
 		}else {
 			req.flash('success', '添加成功.');
-			res.redirect('/');
+			res.redirect('/users');
 		}
 	});
 });
 
+router.get('/delete', function(req, res, next) {
+	data = req.query.id;
+	id = mongoose.Types.ObjectId(data)
+	User.findByIdAndRemove(id, function(err, docs) {
+		if (err) console.log(err);
+		console.log('删除成功: ' + docs)
+		res.redirect('/users');
+	});
+});
+
+router.post('/update', function(req, res, next) {
+	
+});
 
 module.exports = router;

@@ -7,36 +7,6 @@
 <script src='/javascripts/jquery.min.js'></script>
 <script src='/javascripts/jquery-ui.custom.min.js'></script>
 <script src='/javascripts/fullcalendar.js'></script>
-<script type="text/javascript">
-	/** calendar配置 **/
-	$(document).ready(
-        function() {
-	$("#calendar").fullCalendar(
-		{
-			header : {
-				left : 'prevYear,nextYear',
-				center : 'title',
-				right : 'prev,next'
-			},
-			buttonText: {
-				prev: "<span class='fc-text-arrow'>&lsaquo;上月</span>",
-				next: "<span class='fc-text-arrow'>下月&rsaquo;</span>",
-				prevYear: "<span class='fc-text-arrow'>&laquo;上年</span>",
-				nextYear: "<span class='fc-text-arrow'>下年&raquo;</span>"
-			},
-			editable : true,
-
-		});
-	});
-	/** 绑定事件到日期下拉框 **/
-	$(function(){
-		$("#fc-dateSelect").delegate("select","change",function(){
-			var fcsYear = $("#fcs_date_year").val();
-			var fcsMonth = $("#fcs_date_month").val();
-			$("#calendar").fullCalendar('gotoDate', fcsYear, fcsMonth);
-		});
-	});
-	</script>
 <style>
 
 body {
@@ -65,16 +35,38 @@ body {
 .fr {float: right;}
 
 table {
-	border: 2px;
-	border-spacing: 1px;
-	border-color: gray;
 	width: 100%;
 	max-width: 100%;
 	background-color: transparent;
 	text-align: center;
 	padding-top: 20px;
 	box-sizing:border-box;
+	border-top-width: 1px;
+    	border-right-width: 1px;
+    	border-bottom-width: 1px;
+    	border-left-width: 1px;
+    	border-top-style: solid;
+    	border-right-style: solid;
+  	border-bottom-style: none;
+    	border-left-style: solid;
+    	border-top-color: #CCCCCC;
+    	border-right-color: #CCCCCC;
+    	border-bottom-color: #CCCCCC;
+    	border-left-color: #CCCCCC;
 }
+
+
+th, td{
+    	border-bottom-width: 1px;
+    	border-bottom-style: solid;
+        border-bottom-color: #CCCCCC;
+    	border-right-width: 0px;
+    	border-left-width: 1px;
+    	border-right-style: none;
+    	border-left-style: solid;
+    	border-right-color: #CCCCCC;
+    	border-left-color: #CCCCCC;
+    } 
 
 
 .white_content {
@@ -144,15 +136,14 @@ table {
     vertical-align: middle;
     border-radius: 4px;
 }
+		textarea {
+			width: 400px; 
+			height: 200px;
+		}
 
 </style>
 </head>
 <body>
-	<div id="msgTopTipWrapper" style="display:none">
-		<div id="msgTopTip">
-			<span><i class="iconTip"></i>正在载入日历数据...</span>
-		</div>
-	</div>
 	<% if (error) { %>
 		<div id="msgTopTip">
 			<span><i class="iconTip"></i><%= error %></span>
@@ -160,8 +151,8 @@ table {
 	<% } %>
 	<div class="calendarWrapper">
 		<div class="rightSidePanel mb50 fr">
-			<div id="users-manager" class="white_content">
-			<form style="height: 90%" id="users">
+			<div id="users-add" class="white_content">
+			<form style="height: 90%" id="users" method="post" action="/users/add">
 				<div class="form-group">
                                 <label class="sr-only" for="name">用户名：</label>
                                 <input class="form-control" id="name" type="text" name="name" placeholder="请输入用户名" />
@@ -175,9 +166,9 @@ table {
                                 <input class="form-control" id="email" type="text" name="email" placeholder="请输入邮箱" />
                                 </div>	
 				<input class="btn" type="reset" value="取消" />
-				<button class="btn" type="button" onclick="user_save()">保存</button>
+				<input class="btn" type="submit" value="添加" />
 			</form>
-				<a style="margin-right: 10px" href="javascript:void(0)" onclick="document.getElementById('users-manager').style.display='none';document.getElementById('fade').style.display='none'">关闭</a>
+				<a style="margin-right: 10px" href="javascript:void(0)" onclick="document.getElementById('users-add').style.display='none';document.getElementById('fade').style.display='none'">关闭</a>
 			</div>
 			<div id="fade" class="black_overlay"></div>
 			<table>
@@ -188,13 +179,12 @@ table {
 					<th>操作</th>
 				</tr>
 				<% users.forEach(function(user) { %>
-				<tr>
+				<tr id='<%= user._id %>'>
 					<td><%= user.name %></td>
 					<td><%= user.phone %></td>
 					<td><%= user.email %></td>
 					<td>
-						<a>修改</a>
-						<a>删除</a>
+						<a href='/users/delete?id=<%= user._id %>'>删除</a>
 					</td>
 				</tr>
 				<% }) %>
@@ -202,29 +192,28 @@ table {
 			<div>
 				<button type="button" id="prev_page">上一页</button>
 				<button type="button" id="next_page">下一页</button>
-				<button type="button" id="add_user" onclick="add_user()">添加用户</button>
+				<button type="button" id="add_user" onclick="add_user()">添加用户</button><br />
+				<a href='/'>返回首页</a>
 			</div>
 		</div>
-		<div id="calendar" class="dib"></div>
+		<div id="calendar" class="dib">
+			<form id="days" action="/users/days" method="post">
+                                <label class="sr-only" for="holidays">节假日：</label>
+				<textarea name="holidays">
+				</textarea><br/>
+                                <label class="sr-only" for="weekendoff">工作日：</label>
+				<textarea name="weekendoff">
+				</textarea><br/>
+				<input type="submit" class="btn" value="保存" />
+			</form>
+		</div>
 	</div>
 	<script type='text/javascript'>
 		function add_user() {
-			$("#users-manager").show();
+			$("#users-add").show();
 			$('#fade').show();
 		}
 
-		function user_save() {
-			$.ajax({
-				type: "POST",
-				dataType: "json",
-				contentType: "appliaction/json",
-				url: "/users/add",
-				data: $("#users").serialize(),
-			}).then(res => {
-				alert(res);
-			});
-		
-		}
 	</script>
 </body>
 </html>
