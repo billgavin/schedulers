@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var moment = require('moment');
+var moment = require('moment-timezone');
 var User = require('../model/user');
 var mongoose = require('mongoose');
 
@@ -12,29 +12,29 @@ function scheduler(day, shift, user) {
 	shifts = [
 		{
 			title: '早班：',
-			start: moment(day + ' 07:00').format('YYYY-MM-DD HH:mm'),
-			end: moment(day + ' 09:00').format('YYYY-MM-DD HH:mm'),
+			start: moment.tz(day + ' 07:00', timezone).format(),
+			end: moment.tz(day + ' 09:00', timezone).format(),
 			allday:false,
 			color: 'orange'
 		},
 		{
 			title: '日常班：',
-			start: moment(day + ' 09:00').format('YYYY-MM-DD HH:mm'),
-			end: moment(day + ' 18:00').format('YYYY-MM-DD HH:mm'),
+			start: moment.tz(day + ' 09:00', timezone).format(),
+			end: moment.tz(day + ' 18:00', timezone).format(),
 			allday:false,
 			color: 'blue'
 		},
 		{
 			title: '晚班：',
-			start: moment(day + ' 18:00').format('YYYY-MM-DD HH:mm'),
-			end: moment(day + ' 23:00').format('YYYY-MM-DD HH:mm'),
+			start: moment.tz(day + ' 18:00', timezone).format(),
+			end: moment.tz(day + ' 23:00', timezone).format(),
 			allday:false,
 			color: 'orange'
 		},
 		{
 			title: '周末班：',
-			start: moment(day + ' 07:00').format('YYYY-MM-DD HH:mm'),
-			end: moment(day + ' 23:00').format('YYYY-MM-DD HH:mm'),
+			start: moment.tz(day + ' 07:00', timezone).format(),
+			end: moment.tz(day + ' 23:00', timezone).format(),
 			allday:false,
 			color: 'red'
 		}
@@ -67,6 +67,14 @@ function getYearWeek(y, m, d) {
 	return Math.ceil((d + ((d2.getDay() + 1) -1)) / 7);
 }
 
+
+function padding(num, length) {
+        for(var len = (num + "").length; len < length; len = num.length) {
+            num = "0" + num;            
+        }
+        return num;
+}
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
 	date = new Date();
@@ -77,13 +85,12 @@ router.get('/', function(req, res, next) {
 		if (err) {
 			console.error(err);
 		}else {
-			console.log(users);
 			schedulers = [];
+			if (users.length >=8) {
 			for (var i=1; i<=month_day; i++) {
 				day = new Date(year, month, i).getDay();
-				date_str = year + '-' + (month + 1) + '-' + i;
+				date_str = year + '-' + padding(month + 1, 2) + '-' + padding(i, 2);
 				week = getYearWeek(year, month+1, i);
-				console.log(week);
 				weekdays = new Array(1, 2, 3, 4, 5);
 				weekends = new Array(0, 6);
 				if (contains(weekdays, day)) {
@@ -95,7 +102,7 @@ router.get('/', function(req, res, next) {
 					schedulers.push(scheduler(date_str, 3, users[1]));
 				}
 
-			}
+			}}
   			res.render('index', { title: '运维值班表', schedulers: JSON.stringify(schedulers)});
 		}
 	});

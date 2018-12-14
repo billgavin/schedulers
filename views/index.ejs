@@ -46,6 +46,7 @@
 				nextYear: "<span class='fc-text-arrow'>下一年&raquo;</span>"
 			},
 			editable : true,
+			navLinks: true,
 			events: schedulers,
 			dayClick : function(dayDate, allDay, jsEvent, view) { //点击单元格事件			
 				var d = $.fullCalendar.formatDate(dayDate,"dddd");
@@ -184,7 +185,7 @@ form {margin-right: -15px; margin-left: -15px;}
 					<div class="alm_lunar_date"></div>
 				</div>
 			</div>
-			<form action="/users/login", method="post">
+			<form action="./users/login", method="post">
 				<div class="form-group">
 		  		<label class="sr-only" for="name">用户名：</label>
 				<input class="form-control" id="name" type="text" name="name" placeholder="请输入用户名" />

@@ -27,7 +27,7 @@ router.post('/login', function(req, res, next) {
 		});
 	}else {
 		req.flash('error', '用户名或密码错误！');
-		res.redirect('/');
+		res.redirect('./index');
 	}
 
 });
@@ -40,10 +40,10 @@ router.post('/add', function(req, res, next) {
 	user.save(function(err) {
 		if (err) {
 			req.flash('error', '添加失败！');
-			res.redirect('/users');
+			res.redirect('./');
 		}else {
 			req.flash('success', '添加成功.');
-			res.redirect('/users');
+			res.redirect('./');
 		}
 	});
 });
@@ -54,7 +54,7 @@ router.get('/delete', function(req, res, next) {
 	User.findByIdAndRemove(id, function(err, docs) {
 		if (err) console.log(err);
 		console.log('删除成功: ' + docs)
-		res.redirect('/users');
+		res.redirect('./');
 	});
 });
 

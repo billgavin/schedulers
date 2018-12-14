@@ -152,7 +152,7 @@ th, td{
 	<div class="calendarWrapper">
 		<div class="rightSidePanel mb50 fr">
 			<div id="users-add" class="white_content">
-			<form style="height: 90%" id="users" method="post" action="/users/add">
+			<form style="height: 90%" id="users" method="post" action="./add">
 				<div class="form-group">
                                 <label class="sr-only" for="name">用户名：</label>
                                 <input class="form-control" id="name" type="text" name="name" placeholder="请输入用户名" />
@@ -184,20 +184,18 @@ th, td{
 					<td><%= user.phone %></td>
 					<td><%= user.email %></td>
 					<td>
-						<a href='/users/delete?id=<%= user._id %>'>删除</a>
+						<a href='./delete?id=<%= user._id %>'>删除</a>
 					</td>
 				</tr>
 				<% }) %>
 			</table>
 			<div>
-				<button type="button" id="prev_page">上一页</button>
-				<button type="button" id="next_page">下一页</button>
 				<button type="button" id="add_user" onclick="add_user()">添加用户</button><br />
-				<a href='/'>返回首页</a>
+				<a href='/schedulers/'>返回首页</a>
 			</div>
 		</div>
 		<div id="calendar" class="dib">
-			<form id="days" action="/users/days" method="post">
+			<form id="days" action="./days" method="post">
                                 <label class="sr-only" for="holidays">节假日：</label>
 				<textarea name="holidays">
 				</textarea><br/>
