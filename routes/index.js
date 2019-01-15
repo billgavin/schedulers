@@ -75,12 +75,34 @@ function padding(num, length) {
         return num;
 }
 
+function getUsers() {
+	User.find(function(err, users) {
+		if (err) return null;
+		ampm = {};
+		normal = {};
+		weekend = {};
+		users.forEach(function(value) {
+			shifts = value.shift;
+			ampm_shift = shifts.ampm;
+			normal_shift = shifts.normal;
+			weekend_shift = shifts.weekend;
+			delete value.shift;
+			if (ampm_shift != 0) ampm[ampm_shift] = value;
+			if (normal_shift != 0) normal[normal_shift] = value;
+			if (weekend_shift != 0) weekend[weekend_shift] = value;
+		});
+		users = new Array(ampm, normal, ampm, weekend);
+		return users;
+	});
+}
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
 	date = new Date();
 	month = date.getMonth();
 	year = date.getFullYear();
 	month_day = new Date(year, month, 0).getDate();
+	console.log(getUsers());
 	User.find(function(err, users) {
 		if (err) {
 			console.error(err);

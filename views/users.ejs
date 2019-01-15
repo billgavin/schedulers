@@ -75,7 +75,7 @@ th, td{
 	top: 30%;
 	left: 30%;
 	width: 35%;
-	height: 35%;
+	height: 55%;
 	padding: 20px;
 	border: 2px solid blue;
 	background-color: white;
@@ -112,6 +112,20 @@ th, td{
 .form-control {
         display: block;
         width: 88%;
+        height: 34px;
+        margin-left: 10px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+
+}
+.form-shift {
+        display: inline-block;
+        width: 25%;
         height: 34px;
         margin-left: 20px;
         font-size: 14px;
@@ -152,7 +166,7 @@ th, td{
 	<div class="calendarWrapper">
 		<div class="rightSidePanel mb50 fr">
 			<div id="users-add" class="white_content">
-			<form style="height: 90%" id="users" method="post" action="./add">
+			<form style="height: 95%" id="users" method="post" action="./add">
 				<div class="form-group">
                                 <label class="sr-only" for="name">用户名：</label>
                                 <input class="form-control" id="name" type="text" name="name" placeholder="请输入用户名" />
@@ -165,6 +179,12 @@ th, td{
                                 <label class="sr-only" for="email">邮&nbsp;&nbsp;&nbsp;&nbsp;箱：</label>
                                 <input class="form-control" id="email" type="text" name="email" placeholder="请输入邮箱" />
                                 </div>	
+				<div class="form-group">
+                                <label class="sr-only" for="shift">排班次序：</label>
+                                <input class="form-shift" id="ampm" type="text" name="ampm" placeholder="早晚" />
+				<input class="form-shift" id="normal" type="text" name="normal" placeholder="日常" />
+				<input class="form-shift" id="weekend" type="text" name="weekend" placeholder="周末" />
+                                </div>	
 				<input class="btn" type="reset" value="取消" />
 				<input class="btn" type="submit" value="添加" />
 			</form>
@@ -176,6 +196,7 @@ th, td{
 					<th>用户</th>
 					<th>手机</th>
 					<th>邮箱</th>
+					<th>排班次序</th>
 					<th>操作</th>
 				</tr>
 				<% users.forEach(function(user) { %>
@@ -183,6 +204,17 @@ th, td{
 					<td><%= user.name %></td>
 					<td><%= user.phone %></td>
 					<td><%= user.email %></td>
+					<td>
+						<% if(user.shift.ampm) { %>
+						<span>早晚：<%= user.shift.ampm %></span>
+						<% } %>
+						<% if(user.shift.normal) { %>
+						<span>日常：<%= user.shift.normal %></span>
+						<% } %>
+						<% if(user.shift.weekend) { %>
+						<span>周末：<%= user.shift.weekend %></span>
+						<% } %>
+					</td>
 					<td>
 						<a href='./delete?id=<%= user._id %>'>删除</a>
 					</td>

@@ -36,6 +36,7 @@ router.post('/add', function(req, res, next) {
 	data = req.body;
 	console.log(JSON.stringify(data));
 	data._id = new mongoose.Types.ObjectId();
+	data.shift = {'ampm': data.ampm, 'normal': data.normal, 'weekend': data.weekend};
 	user = new User(data);
 	user.save(function(err) {
 		if (err) {
