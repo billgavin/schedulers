@@ -154,6 +154,10 @@ th, td{
 			width: 400px; 
 			height: 200px;
 		}
+		textarea.edit_shift {
+			width: 300px;
+			height: 100px;
+		}
 
 </style>
 </head>
@@ -166,7 +170,7 @@ th, td{
 	<div class="calendarWrapper">
 		<div class="rightSidePanel mb50 fr">
 			<div id="users-add" class="white_content">
-			<form style="height: 95%" id="users" method="post" action="./add">
+			<form style="height: 90%" id="users" method="post" action="./add">
 				<div class="form-group">
                                 <label class="sr-only" for="name">用户名：</label>
                                 <input class="form-control" id="name" type="text" name="name" placeholder="请输入用户名" />
@@ -180,15 +184,49 @@ th, td{
                                 <input class="form-control" id="email" type="text" name="email" placeholder="请输入邮箱" />
                                 </div>	
 				<div class="form-group">
-                                <label class="sr-only" for="shift">排班次序：</label>
-                                <input class="form-shift" id="ampm" type="text" name="ampm" placeholder="早晚" />
-				<input class="form-shift" id="normal" type="text" name="normal" placeholder="日常" />
-				<input class="form-shift" id="weekend" type="text" name="weekend" placeholder="周末" />
+                                <label class="sr-only" for="shift">排班次序</label>
+				<select class="form-shift" id="ampm">
+					<option selected="selected" value="0">不值早晚班</option>
+					<option value='<%= ss.a %>'>早晚班-<%= ss.a %></option>
+				</select>
+				<!--
+                                <label class="sr-only" for="normal">日常</label>
+				-->
+				<select class="form-shift" id="normal">
+					<option selected="selected" value="0">不值日常班</option>
+					<% if (ss.n <=5) { %>
+					<option value='<%= ss.n %>'>日常班-<%= ss.n %></option>
+					<% } %>
+				</select>
+				<!--
+                                <label class="sr-only" for="weekend">周末</label>
+				-->
+				<select class="form-shift" id="weekend">
+					<option selected="selected" value='<%= ss.w %>'>周末班-<%= ss.w %></option>
+				</select>
                                 </div>	
 				<input class="btn" type="reset" value="取消" />
 				<input class="btn" type="submit" value="添加" />
 			</form>
 				<a style="margin-right: 10px" href="javascript:void(0)" onclick="document.getElementById('users-add').style.display='none';document.getElementById('fade').style.display='none'">关闭</a>
+			</div>
+			<div id="edit_shift" class="white_content">
+				<form id="update_shift" action="./update" method="post">
+                                	<label class="sr-only" for="ampm">早晚班：</label>
+					<textarea name="ampm" class="edit_shift">
+					<%= shifts.ampm %>
+					</textarea><br/>
+                                	<label class="sr-only" for="normal">日常班：</label>
+					<textarea name="normal" class="edit_shift">
+					<%= shifts.normal %>
+					</textarea><br/>
+                                	<label class="sr-only" for="weekend">周末班：</label>
+					<textarea name="weekend" class="edit_shift">
+					<%= shifts.weekend %>
+					</textarea><br/>
+					<input type="submit" class="btn" value="保存" />
+				</form>
+				<a style="margin-right: 10px" href="javascript:void(0)" onclick="document.getElementById('edit_shift').style.display='none';document.getElementById('fade').style.display='none'">关闭</a>
 			</div>
 			<div id="fade" class="black_overlay"></div>
 			<table>
@@ -222,7 +260,8 @@ th, td{
 				<% }) %>
 			</table>
 			<div>
-				<button type="button" id="add_user" onclick="add_user()">添加用户</button><br />
+				<button type="button" id="add_user" onclick="add_user()">添加用户</button>
+				<button type="button" id="edit_shift" onclick="edit_shift()">编辑排班次序</button><br />
 				<a href='/schedulers/'>返回首页</a>
 			</div>
 		</div>
@@ -242,6 +281,11 @@ th, td{
 		function add_user() {
 			$("#users-add").show();
 			$('#fade').show();
+		}
+
+		function edit_shift() {
+			$('#edit_shift').show();
+			$('fade').show();
 		}
 
 	</script>
