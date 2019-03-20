@@ -1,132 +1,55 @@
 var express = require('express');
 var router = express.Router();
 var moment = require('moment-timezone');
+var md5 = require('js-md5');
 var User = require('../model/user');
+var Days = require('../model/days');
+var Histories = require('../model/historys');
 var mongoose = require('mongoose');
+var Scheduler = require('../scheduler');
+
 
 var timezone = 'Asia/Shanghai';
 var now = moment()
-console.log(now.format())
 
-function scheduler(day, shift, user) {
-	shifts = [
-		{
-			title: '早班：',
-			start: moment.tz(day + ' 07:00', timezone).format(),
-			end: moment.tz(day + ' 09:00', timezone).format(),
-			allday:false,
-			color: 'orange'
-		},
-		{
-			title: '日常班：',
-			start: moment.tz(day + ' 09:00', timezone).format(),
-			end: moment.tz(day + ' 18:00', timezone).format(),
-			allday:false,
-			color: 'blue'
-		},
-		{
-			title: '晚班：',
-			start: moment.tz(day + ' 18:00', timezone).format(),
-			end: moment.tz(day + ' 23:00', timezone).format(),
-			allday:false,
-			color: 'orange'
-		},
-		{
-			title: '周末班：',
-			start: moment.tz(day + ' 07:00', timezone).format(),
-			end: moment.tz(day + ' 23:00', timezone).format(),
-			allday:false,
-			color: 'red'
-		}
-	]
-
-	s = {
-		title: shifts[shift].title + user.name + ' ' + user.phone,
-		start: shifts[shift].start,
-		end: shifts[shift].end,
-		color: shifts[shift].color
-	};
-	return s
-
-}
-
-function contains(arr, obj) {
-	var i = arr.length;
-	while (i--) {
-		if (arr[i] === obj) {
-			return true;
-		}
-	}
-	return false;
-}
-
-function getYearWeek(y, m, d) {
-	var d1 = new Date(y, m-1, d);
-	var d2 = new Date(y, 0, 1);
-	d = Math.round((d1 - d2) / 86400000);
-	return Math.ceil((d + ((d2.getDay() + 1) -1)) / 7);
-}
-
-
-function padding(num, length) {
-        for(var len = (num + "").length; len < length; len = num.length) {
-            num = "0" + num;            
-        }
-        return num;
-}
-
-function getUsers() {
+/* GET home page. */
+router.get('/', function(req, res, next) {
+	date = new Date();
+	now_str = moment(date).format('YYYY-MM-DD');
+	year = date.getFullYear();
+	console.log('Now: ' + now_str);
 	User.find(function(err, users) {
-		if (err) return null;
+		if (err) res.render('index', { title: '运维值班表', schedulers: JSON.stringify([])});
 		ampm = {};
 		normal = {};
 		weekend = {};
 		users.forEach(function(value) {
 			shifts = value.shift;
 			ampm_shift = shifts.ampm;
-			normal_shift = shifts.normal;
-			weekend_shift = shifts.weekend;
 			delete value.shift;
-			if (ampm_shift != 0) ampm[ampm_shift] = value;
-			if (normal_shift != 0) normal[normal_shift] = value;
-			if (weekend_shift != 0) weekend[weekend_shift] = value;
+			if (ampm_shift){
+				ampm[ampm_shift] = value;
+			}
+			normal_shift = shifts.normal;
+			if (normal_shift) {
+				normal[normal_shift] = value;
+			}
+			weekend_shift = shifts.weekend;
+			if (weekend_shift) {
+				weekend[weekend_shift] = value;
+			}
 		});
-		users = new Array(ampm, normal, ampm, weekend);
-		return users;
-	});
-}
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-	date = new Date();
-	month = date.getMonth();
-	year = date.getFullYear();
-	month_day = new Date(year, month, 0).getDate();
-	console.log(getUsers());
-	User.find(function(err, users) {
-		if (err) {
-			console.error(err);
-		}else {
-			schedulers = [];
-			if (users.length >=8) {
-			for (var i=1; i<=month_day; i++) {
-				day = new Date(year, month, i).getDay();
-				date_str = year + '-' + padding(month + 1, 2) + '-' + padding(i, 2);
-				week = getYearWeek(year, month+1, i);
-				weekdays = new Array(1, 2, 3, 4, 5);
-				weekends = new Array(0, 6);
-				if (contains(weekdays, day)) {
-					schedulers.push(scheduler(date_str, 0, users[0]));
-					schedulers.push(scheduler(date_str, 1, users[day]));
-					schedulers.push(scheduler(date_str, 2, users[2]));
-				}
-				if (contains(weekends, day)) {
-					schedulers.push(scheduler(date_str, 3, users[1]));
-				}
-
-			}}
-  			res.render('index', { title: '运维值班表', schedulers: JSON.stringify(schedulers)});
-		}
+		Days.findOne({'year': year}, function(err, days) {
+			if (err) res.render('index', { title: '运维值班表', schedulers: JSON.stringify([])});
+			holidays = days.holidays;
+			weekendsoff = days.weekendsoff;
+			Histories.find(function(err, docs) {
+				if(err) console.log(err);
+				last = Scheduler.get_schedulers(year, ampm, normal, weekend, holidays, weekendsoff);
+				schedulers = docs.concat(last);
+				res.render('index', { title: '运维值班表', schedulers: JSON.stringify(schedulers)});
+			});
+		});
 	});
 });
 
