@@ -40,7 +40,8 @@ function scheduler(day, shift, user) {
 	]
 
 	s = {
-		title: shifts[shift].title + user.name + ' ' + user.phone,
+		//title: shifts[shift].title + user.name + ' ' + user.phone,
+		title: shifts[shift].title + user.name,
 		start: shifts[shift].start,
 		end: shifts[shift].end,
 		color: shifts[shift].color
@@ -67,7 +68,7 @@ function get_schedulers(year, ampm, normal, weekend, holidays, weekendsoff, star
 			weekday = date.getDay();
 			if (utils.contains(weekdays, weekday) && ! utils.contains(holidays, date_str)) {
 				workdays.push(date_str);
-			}else if(weekday == 0 || weekday == 6){	
+			}else if((weekday == 0 || weekday == 6) && ! utils.contains(weekendsoff, date_str)){	
 				holidays.push(date_str);
 			}
 		}
@@ -75,14 +76,18 @@ function get_schedulers(year, ampm, normal, weekend, holidays, weekendsoff, star
 	workdays.sort(function(a, b) {
 		return Date.parse(a) - Date.parse(b);
 	});
+	wdays = [];
+	for(var i=0; i<workdays.length; i++) {
+		if(utils.campDate(start, workdays[i])) continue;
+		wdays.push(workdays[i]);
+	}
 	week = 0;
-	for (var i=0; i<workdays.length; i++) {
-		dstr = workdays[i];
+	for (var i=0; i<wdays.length; i++) {
+		dstr = wdays[i];
 		weekday = new Date(dstr).getDay();
 		if (weekday == 1) week += 1;
-		if (utils.campDate(start, dstr)) continue;
 		if (utils.contains(weekdays, weekday)) {
-			schedulers.push(scheduler(dstr, 1, ampm[weekday.toString()]));
+			schedulers.push(scheduler(dstr, 1, normal[weekday.toString()]));
 		}
 		if (utils.contains(weekendsoff, dstr)) {
 			woff = weekendsoff.indexOf(dstr) % nk.length + 1;
@@ -96,9 +101,13 @@ function get_schedulers(year, ampm, normal, weekend, holidays, weekendsoff, star
 	holidays.sort(function(a, b) {
 		return Date.parse(a) - Date.parse(b);
 	});
+	hdays = [];
 	for (var i=0; i<holidays.length; i++) {
-		dstr = holidays[i];
-		if (utils.campDate(start, dstr)) continue;
+		if(utils.campDate(start, holidays[i])) continue;
+		hdays.push(holidays[i]);
+	}
+	for (var i=0; i<hdays.length; i++) {
+		dstr = hdays[i];
 		w = (i % wk.length + 1).toString();
 		sholiday = scheduler(dstr, 3, weekend[w]);
 		schedulers.push(sholiday);

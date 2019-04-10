@@ -1,4 +1,5 @@
 var express = require('express');
+var redis = require('redis');
 var router = express.Router();
 var moment = require('moment-timezone');
 var md5 = require('js-md5');
@@ -10,7 +11,8 @@ var Scheduler = require('../scheduler');
 
 
 var timezone = 'Asia/Shanghai';
-var now = moment()
+var now = moment();
+var rcache = redis.createClient();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -43,11 +45,30 @@ router.get('/', function(req, res, next) {
 			if (err) res.render('index', { title: '运维值班表', schedulers: JSON.stringify([])});
 			holidays = days.holidays;
 			weekendsoff = days.weekendsoff;
+			schedulers = '';
 			Histories.find(function(err, docs) {
 				if(err) console.log(err);
-				last = Scheduler.get_schedulers(year, ampm, normal, weekend, holidays, weekendsoff);
-				schedulers = docs.concat(last);
-				res.render('index', { title: '运维值班表', schedulers: JSON.stringify(schedulers)});
+				start_date = year + '-01-01';
+				if (docs.length != 0) {
+					history_end = docs[docs.length-1];
+					console.log(history_end);
+					history_date = moment(Date.parse(history_end.start));
+					start_date = history_date.add(1, 'days').format('YYYY-MM-DD');
+				}
+				rcache.get(start_date, function(err, value) {
+					if(err | ! value) {
+						last = Scheduler.get_schedulers(year, ampm, normal, weekend, holidays, weekendsoff, start_date);
+						rcache.set(start_date, JSON.stringify(last), function(err) {
+							if (err) console.log(err);
+						});
+						schedulers = docs.concat(last);
+					}else {
+						last = eval('(' + value + ')');
+						schedulers = docs.concat(last);
+						console.log('Hit cache!');
+					}
+					res.render('index', { title: '运维值班表', schedulers: JSON.stringify(schedulers)});
+				});
 			});
 		});
 	});

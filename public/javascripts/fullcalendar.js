@@ -1263,6 +1263,7 @@ function Header(calendar, options) {
 							selectHtml +="<option value='"+i+"'>" + $.trim(monthDigitCN[i]+"月") + "</option>";
 						}
 						selectHtml +="</select>";
+						//selectHtml += '<input type="checkbox" id="week_start" name="week_start" value="0" />周日在前 <input type="checkbox" id="week_number" name="week_number" value="true" />显示周次'
 						selectHtml +="</span>";
 						e.append(selectHtml);
 						if (prevButton) {

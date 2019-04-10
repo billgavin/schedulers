@@ -269,9 +269,11 @@ th, td{
 			<form id="days" action="./days" method="post">
                                 <label class="sr-only" for="holidays">节假日：</label>
 				<textarea name="holidays">
+				<%= holidays %>
 				</textarea><br/>
                                 <label class="sr-only" for="weekendoff">工作日：</label>
 				<textarea name="weekendoff">
+				<%= weekendsoff %>
 				</textarea><br/>
 				<input type="submit" class="btn" value="保存" />
 			</form>

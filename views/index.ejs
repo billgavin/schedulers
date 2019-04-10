@@ -45,8 +45,12 @@
 				prevYear: "<span class='fc-text-arrow'>&laquo;上一年</span>",
 				nextYear: "<span class='fc-text-arrow'>下一年&raquo;</span>"
 			},
+			height: 'auto',
+			fixedWeekCount: false,
 			editable : true,
 			navLinks: true,
+			weekNumbers: true,
+			firstDay: 1,
 			events: schedulers,
 			dayClick : function(dayDate, allDay, jsEvent, view) { //点击单元格事件			
 				var d = $.fullCalendar.formatDate(dayDate,"dddd");
