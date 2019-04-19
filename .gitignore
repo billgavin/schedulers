@@ -1,2 +1,3 @@
 .gitignore
+*.rdb
 /node_modules
